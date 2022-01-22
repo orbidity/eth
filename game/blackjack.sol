@@ -34,6 +34,9 @@ function random(uint256 seed, uint256 low, uint256 hi) pure returns (uint256, ui
 }
 
 contract Blackjack is Game {
+    event State_event (address indexed strategy, uint hand);
+    event Action_event (address indexed strategy, uint hand, Action action);
+
     uint[13] card_value = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]; 
 
     // Seed used for "randomness"
@@ -97,11 +100,17 @@ contract Blackjack is Game {
             _player_states[i] = Player_state(deal(_deck), true);
         }
 
+        // Emit the state
+        for (uint i = 0; i < _players.length; i++) {
+            emit State_event (_players[i], _player_states[i].hand);
+        }
+
         // Play :)
         while (_remaining_players > 0) {
             for (uint i = 0; i < _players.length; i++) {
                 if (_player_states[i].is_playing) {
                     Action _action = get_action(_players[i], _player_states[i].hand);
+                    emit Action_event (_players[i], _player_states[i].hand, _action);
                     if (_action == Action.Hit) {
                         _player_states[i].hand += hit(_deck);
                     } else {
