@@ -176,7 +176,7 @@ contract ORBToken is ERC20Interface, SafeMath {
             balances[winnerAddress] = safeAdd(balances[winnerAddress], stake * N_PLAYERS);
             emit Transfer(address(0x0), msg.sender, stake * N_PLAYERS);
 
-            cancelGame(gameId);
+            delete games[gameId];
         }
     }
 
