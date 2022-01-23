@@ -1,31 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.7.0 <0.9.0;
- 
-//Safe Math Interface
- 
-contract SafeMath {
- 
-    function safeAdd(uint a, uint b) public pure returns (uint c) {
-        c = a + b;
-        require(c >= a, "safeAdd failed");
-    }
- 
-    function safeSub(uint a, uint b) public pure returns (uint c) {
-        require(b <= a, "safeSub failed");
-        c = a - b;
-    }
- 
-    function safeMul(uint a, uint b) public pure returns (uint c) {
-        c = a * b;
-        require(a == 0 || c / a == b, "safeMul failed");
-    }
- 
-    function safeDiv(uint a, uint b) public pure returns (uint c) {
-        require(b > 0, "safeDiv failed");
-        c = a / b;
-    }
-}
- 
+
  
 //ERC Token Standard #20 Interface
  
