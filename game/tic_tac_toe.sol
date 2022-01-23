@@ -65,7 +65,11 @@ contract Tic_tac_toe is Game {
     } 
 
     function get_move(address _strategy, Player[] memory _board) private returns (uint) {
-        return Tic_tac_toe_strategy(address(_strategy)).get_move(_board);
+        try Tic_tac_toe_strategy(address(_strategy)).get_move(_board) returns (uint _pos) {
+            return _pos;
+        } catch {
+            return type(uint).max;
+        }
     }
 
     function draw(Player[] memory _board) private pure returns (bool) {
@@ -106,6 +110,11 @@ contract Tic_tac_toe is Game {
 
             // Ask what the player would like to do via their strategy
             uint _pos = get_move(_player == Player.One ? _player_1 : _player_2, _board);
+            if (_pos == type(uint).max) {
+                _winner = Player.None;
+                break;
+            }
+
             require(is_valid_move(_board, _pos), "Invalid move!");
             
             _board[_pos] = _player;

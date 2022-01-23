@@ -3,7 +3,7 @@ pragma solidity ^0.8.7;
 
 import "./game.sol";
 
-enum Action { Hit, Stop }
+enum Action { Hit, Stop, Null }
 
 interface Blackjack_strategy is Strategy {
     function get_action(uint hand) external returns (Action); 
@@ -64,7 +64,11 @@ contract Blackjack is Game {
     
     
     function get_action(address _strategy, uint _hand) private returns (Action) {
-        return Blackjack_strategy(address(_strategy)).get_action(_hand);
+        try Blackjack_strategy(address(_strategy)).get_action(_hand) returns (Action _action) {
+            return _action;
+        } catch {
+            return Action.Null;
+        }
     }
 
     struct Player_state {
@@ -110,6 +114,10 @@ contract Blackjack is Game {
             for (uint i = 0; i < _players.length; i++) {
                 if (_player_states[i].is_playing) {
                     Action _action = get_action(_players[i], _player_states[i].hand);
+                    if (_action == Action.Null) {
+                        return type(uint).max;
+                    }
+
                     emit Action_event (_players[i], _player_states[i].hand, _action);
                     if (_action == Action.Hit) {
                         _player_states[i].hand += hit(_deck);
