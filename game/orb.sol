@@ -13,7 +13,8 @@ interface ERC20_interface {
     function transferFrom(address from, address to, uint tokens) external returns (bool success);
 
     function transfer_to_escrow(address from, uint tokens) external;
- 
+    function transfer_from_escrow(address to, uint tokens) external;
+
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed token_owner, address indexed spender, uint tokens);
 }
@@ -31,6 +32,7 @@ contract Orb is ERC20_interface {
     string public  name;
     uint8 public decimals;
     uint _total_supply;
+    address owner;
  
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
@@ -42,14 +44,20 @@ contract Orb is ERC20_interface {
         name = "Orbs";
         decimals = 2;
         _total_supply = 0;
+        owner = msg.sender;
 
         // Deprecated: 
         // _totalSupply = 100000000; // this is wrong, we mint new orbs on demand
         // balances[0x9E936b88C4faf32774306974a909852Dab3B6916] = _totalSupply;
         // emit Transfer(address(0), 0x9E936b88C4faf32774306974a909852Dab3B6916, _totalSupply);
     }
+
+    modifier onlyOwner() {
+        require(owner == msg.sender, "Ownable: caller is not the owner");
+        _;
+    }
  
-     function totalSupply() public override view returns (uint) {
+    function totalSupply() public override view returns (uint) {
         return _total_supply  - balances[address(0)];
     }
  
@@ -57,7 +65,7 @@ contract Orb is ERC20_interface {
         return balances[token_owner];
     }
 
-    function mintOrbs(uint tokens) public returns (bool success) {
+    function giveMeOrbs(uint tokens) public returns (bool success) {
         require(tokens > 0);
         
         _total_supply = _total_supply.safe_add(tokens);
@@ -98,12 +106,12 @@ contract Orb is ERC20_interface {
         return true;
     }
 
-    function transfer_to_escrow(address from, uint tokens) public override  {
+    function transfer_to_escrow(address from, uint tokens) public onlyOwner override {
         balances[from] = balances[from].safe_sub(tokens);
         emit Transfer(from, address(0x0), tokens);
     }
 
-    function transfer_from_escrow(address to, uint tokens) public override {
+    function transfer_from_escrow(address to, uint tokens) public onlyOwner override {
         balances[to] = balances[to].safe_add(tokens);
         emit Transfer(address(0x0), to, tokens);
 
