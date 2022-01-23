@@ -25,6 +25,7 @@ contract Strategy_1 is Tic_tac_toe_strategy {
 contract Tic_tac_toe is Game {
     event State_event (Player[] board);
 
+
     function get_player(uint _turn) private pure returns (Player) {
         if (_turn % 2 == 1) { 
             return Player.One; 
@@ -69,7 +70,7 @@ contract Tic_tac_toe is Game {
 
     function draw(Player[] memory _board) private pure returns (bool) {
         // No empty spaces
-        for (uint i = 0; i < 8; i++) {
+        for (uint i = 0; i < 9; i++) {
             if (_board[i] == Player.None) return false;
         }
 
@@ -88,7 +89,7 @@ contract Tic_tac_toe is Game {
 
     function play(address[] memory _players) public override returns (uint) {
         // Tic tac toe is only valid w/ 2 players
-        require (_players.length == 2);
+        require (_players.length == 2, "Invalid players");
 
         address _player_1 = _players[0];
         address _player_2 = _players[1];
@@ -105,7 +106,7 @@ contract Tic_tac_toe is Game {
 
             // Ask what the player would like to do via their strategy
             uint _pos = get_move(_player == Player.One ? _player_1 : _player_2, _board);
-            require(is_valid_move(_board, _pos));
+            require(is_valid_move(_board, _pos), "Invalid move!");
             
             _board[_pos] = _player;
 
