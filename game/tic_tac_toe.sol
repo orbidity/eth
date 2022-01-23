@@ -9,7 +9,7 @@ interface Tic_tac_toe_strategy is Strategy {
     function get_move(Player[] memory) external returns (uint); 
 }
 
-contract Strategy_1 is Tic_tac_toe_strategy {
+contract Strategy_3 is Tic_tac_toe_strategy {
     function get_move(Player[] memory _board) external override pure returns (uint) {
         // Returns first free position
         for (uint i = 0; i < _board.length; i++) {
